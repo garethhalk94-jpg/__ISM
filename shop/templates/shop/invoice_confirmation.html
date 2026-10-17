@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}ORDER COMPLETE! | __ISM{% endblock %}
+
+{% block content %}
+<div class="invoice-page">
+
+    <header class="page-header">
+        <p class="eyebrow">ORDER DETAILS</p>
+        <h1>Order #{{ order.pk }}</h1>
+        <p>Your order has been placed successfully.</p>
+        <p>Here is your invoice:</p>
+    </header>
+
+    <section class="invoice-card">
+
+        <div class="invoice-header">
+            <div>
+                <h2>__ISM</h2>
+                <p>Order Invoice</p>
+            </div>
+
+            <div class="invoice-number">
+                <span class="detail-label">Invoice Number</span>
+                <h3>#{{ order.pk }}</h3>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="invoice-details">
+            <div>
+                <p class="detail-label">Customer</p>
+                <p>{{ order.buyer.username }}</p>
+                <p>{{ order.buyer.email }}</p>
+            </div>
+
+            <div>
+                <p class="detail-label">Order Reference</p>
+                <p>#{{ order.pk }}</p>
+            </div>
+        </div>
+
+        <div class="invoice-items">
+            <h3>Order Summary</h3>
+
+            <div class="invoice-table-wrapper">
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Store</th>
+                            <th>Unit</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.product.store.name }}</td>
+                            <td>R{{ item.price_at_purchase|floatformat:2 }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>R{{ item.line_total|floatformat:2}}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">
+                                No items were found for this order.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="invoice-total">
+            <span>Total Amount</span>
+            <strong>R{{ order.total|floatformat:2 }}</strong>
+        </div>
+
+        <div class="invoice-footer">
+            <p>Thank you for taking part in __ISM.</p>
+            <p>*** Please keep this invoice for your records.</p>
+        </div>
+
+    </section>
+
+    <div class="invoice-actions">
+        <a href="{% url 'shop:home' %}" class="button button-primary">
+            Continue Shopping
+        </a>
+    </div>
+
+</div>
+{% endblock %}

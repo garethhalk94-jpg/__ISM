@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+<!-- library/templates/library/home.html -->
+
+{% block title %}Home | __ISM{% endblock %}
+
+{% block content %}
+
+<header class="page-header">
+  <p class="eyebrow">Welcome to __ISM</p>
+    <h1>Browse Products</h1>
+    <p>Search</p>
+</header>
+
+<section class="search-section">
+    <form method="get" action="{% url 'shop:home' %}" class="search-form">
+        <input type="search" name="q" placeholder="Search products..." aria-label="Search products" value=""{{ search_query }}>
+        <button type="submit">
+            Search
+        </button>
+    </form>
+</section>
+
+<section class="products-section">
+    <div class="section-heading">
+        <div>
+            <h2>Available Products</h2>
+            <p>Explore our store!</p>
+        </div>
+
+        <a href="{% url 'shop:product_list' %}" class="browse_link">
+            Browse All
+        </a>
+    </div>
+
+    <div class="product-grid">
+        {% for product in products %}
+            <article class="product-card">
+
+                <div class="product-image-placeholder">
+                    <span>__ISM</span>
+                </div>
+
+                <div class="product-details">
+                    <p class="store-name">
+                        {{ product.store.name }}
+                    </p>
+
+                    <h3>{{ product.name }}</h3>
+
+                    <p class="product=description">
+                        {{ product.description|default:"No description available."|truncatewords:15 }}
+                    </p>
+
+                    <p class="product-price">
+                        R {{ product.price|floatformat:2 }}
+                    </p>
+
+                    {% if product.stock > 0 %}
+                        <p class="stock-label">
+                            In Stock
+                        </p>
+                    {% else %}
+                        <p class="stock-label out-of-stock">
+                            Out of Stock
+                        </p>
+                    {% endif %}
+
+                    <div class="product-actions">
+                        <a href="{% url 'shop:product_detail' product.pk %}" class="button button-secondary">
+                            View Details
+                        </a>
+
+                        {% if product.stock > 0 and user.is_authenticated %}
+                            {% if perms.shop.view_product %}
+                                <form method="post" action="{% url 'shop:add_item_to_cart' product.pk %}">
+                                  {% csrf_token %}
+                                  <input type="hidden" name="quantity" value="1">
+
+                                  <button type="submit" class="button button-primary">
+                                      Add to cart
+                                  </button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <h3>
+                    {% if search_query %}
+                        No products available at the moment.
+                    {% else %}
+                        No products available yet.
+                    {% endif %}
+                </h3>
+
+                <p>
+                    {% if search_query %}
+                        Try searching with a different product name.
+                    {% else %}
+                        Check back later for products from our stores.
+                    {% endif %}
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

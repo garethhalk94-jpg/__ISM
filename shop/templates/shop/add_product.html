@@ -1,0 +1,151 @@
+
+{% extends "base.html" %}
+
+{% block title %}Add Product | __ISM{% endblock %}
+
+{% block content %}
+
+<div class="content-container">
+
+    <div class="page-header">
+        <p>VENDOR TOOLS</p>
+        <h1>Add a product</h1>
+        <p>Add a new product to one of your stores.</p>
+    </div>
+
+    {% if not stores %}
+
+        <div class="status-panel warning">
+            <h2>No stores available</h2>
+            <p>You need to create a store before adding products.</p>
+            <div class="actions-panel" style="margin-top: 15px;">
+                <a href="{% url 'shop:my_stores' %}" class="button button-secondary">
+                    Back to my stores
+                </a>
+                <a href="{% url 'shop:create_store' %}"
+                   class="button button-primary">
+                    Create a store
+                </a>
+            </div>
+        </div>
+    {% else %}
+
+        <div class="ui-card">
+            <div class="ui-card-header">
+                <h2>Product details</h2>
+                <p>Complete the information below to list your product.</p>
+            </div>
+
+            {% if errors %}
+                <div class="status-panel error" style="margin-bottom: 20px;">
+                    {% for error in errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" class="styled-form">
+                {% csrf_token %}
+
+                <div class="form-field">
+                    <label for="id_store">Store</label>
+                    <select id="id_store" name="store" required>
+                        <option value="">-- Select a store --</option>
+                        {% for store in stores %}
+                            <option value="{{ store.pk }}"
+                                {% if form_data.store == store.pk|stringformat:"s" %}selected{% endif %}>
+                                {{ store.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <p class="field-help">
+                        Choose which of your stores will sell this product.
+                    </p>
+                </div>
+
+                <div class="form-field">
+                    <label for="id_name">Product name</label>
+
+                    <input
+                        type="text"
+                        id="id_name"
+                        name="name"
+                        value="{{ form_data.name|default:'' }}"
+                        maxlength="100"
+                        placeholder="Enter product name"
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="id_description">Description</label>
+
+                    <textarea
+                        id="id_description"
+                        name="description"
+                        rows="5"
+                        placeholder="Describe your product"
+                    >{{ form_data.description|default:'' }}</textarea>
+
+                    <p class="field-help">
+                        Provide details to help customers understand your product.
+                    </p>
+                </div>
+
+                <div class="form-field">
+                    <label for="id_price">Price (R)</label>
+
+                    <input
+                        type="number"
+                        id="id_price"
+                        name="price"
+                        value="{{ form_data.price|default:'' }}"
+                        min="0.01"
+                        step="0.01"
+                        placeholder="0.00"
+                        required
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="id_stock">Available stock</label>
+
+                    <input
+                        type="number"
+                        id="id_stock"
+                        name="stock"
+                        value="{{ form_data.stock|default:'' }}"
+                        min="0"
+                        step="1"
+                        placeholder="Enter quantity"
+                        required
+                    >
+
+                    <p class="field-help">
+                        Enter the number of units currently available.
+                    </p>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'shop:my_products' %}"
+                       class="button button-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="button button-primary">
+                        Add product
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

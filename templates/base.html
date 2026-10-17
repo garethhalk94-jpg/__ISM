@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}__ISM{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body>
+
+    <div class="site-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <!-- Brand -->
+            <a href="{% url 'shop:home' %}" class="brand">
+                <strong>__ISM</strong>
+            </a>
+
+            <!-- Logged-in user -->
+            {% if user.is_authenticated %}
+                <div class="sidebar-user">
+                    Logged in as
+                    <strong>{{ user.username }}</strong>
+                    <form method="post" action="{% url 'accounts:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit">Log Out</button>
+                    </form>
+                </div>
+            {% endif %}
+
+            <!-- Navigation -->
+            <nav class="sidebar-nav">
+
+                <p class="nav-heading">MAIN MENU</p>
+
+                <a href="{% url 'shop:home' %}" class="nav-link">
+                    Home
+                </a>
+
+                {% if user.is_authenticated %}
+
+                    {% if perms.shop.view_product %}
+                        <a href="{% url 'shop:product_list' %}"
+                           class="nav-link">
+                            Browse Products
+                        </a>
+
+                        <a href="{% url 'shop:cart_page' %}"
+                           class="nav-link">
+                            My Cart
+                        </a>
+                    {% endif %}
+
+                    {% if perms.shop.add_store %}
+                        <div class="nav-divider"></div>
+
+                        <p class="nav-heading">VENDOR TOOLS</p>
+
+                        <a href="{% url 'shop:my_stores' %}"
+                           class="nav-link">
+                            My Stores
+                        </a>
+
+                        <a href="{% url 'shop:my_products' %}"
+                           class="nav-link">
+                            My Products
+                        </a>
+
+                        <a href="{% url 'shop:create_store' %}"
+                           class="nav-link">
+                            Create Store
+                        </a>
+
+                        <a href="{% url 'shop:add_product' %}"
+                           class="nav-link">
+                            Add Product
+                        </a>
+                    {% endif %}
+
+                {% else %}
+
+                    <div class="nav-divider"></div>
+
+                    <a href="{% url 'accounts:login' %}"
+                       class="nav-link">
+                        Log In
+                    </a>
+
+                    <a href="{% url 'accounts:register' %}"
+                       class="nav-link">
+                        Register
+                    </a>
+
+                {% endif %}
+
+            </nav>
+
+            <!-- Sidebar footer -->
+            <div class="sidebar-footer">
+                <span>__ISM</span>
+            </div>
+
+        </aside>
+
+
+        <!-- Main page content -->
+        <main class="main-content">
+
+            <!-- Django messages -->
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <p class="message {{ message.tags }}">
+                            {{ message }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Individual page content -->
+            {% block content %}
+            {% endblock %}
+
+        </main>
+
+    </div>
+
+</body>
+</html>

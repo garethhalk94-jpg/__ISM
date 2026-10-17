@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>My products</h1>
+
+  {% for store in stores %}
+    <h2>{{ store.name }}</h2>
+    <ul>
+      {% for product in store.products.all %}
+        <li>
+          {{ product.name }} | R{{ product.price }} | Stock: {{ product.stock }}
+          <a href="{% url 'shop:edit_product' product.pk %}">Edit</a>
+          <form method="post" action="{% url 'shop:delete_product' product.pk %}" onsubmit="return confirm('Delete this product?')">
+            {% csrf_token %}
+            <button type="submit">Delete</button>
+          </form>
+        </li>
+      {% empty %}
+        <li>No products in this store yet.</li>
+      {% endfor %}
+    </ul>
+  {% empty %}
+    <p>You need a store first.
+      <a href="{% url 'shop:create_store' %}">Create a store</a></p>
+  {% endfor %}
+
+  <a href="{% url 'shop:add_product' %}">Add a product</a>
+{% endblock %}

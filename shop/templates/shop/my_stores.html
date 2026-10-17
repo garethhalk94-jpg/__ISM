@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+<!-- shop/templates/shop/my_stores.html -->
+{% block content %}
+  <h1>My Stores (__ISM)</h1>
+  <ul>
+    {% for store in stores %}
+      <li>
+        {{ store.name }}
+        <a href="{% url 'shop:add_product' %}">Add a product</a>
+        <a href="{% url 'shop:edit_store' store.pk %}">Edit</a>
+        <form method="post" action="{% url 'shop:delete_store' store.pk %}" onsubmit="return confirm('Delete this store?')">
+          {% csrf_token %}
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+    {% empty %}
+      <li>You don't have any stores yet.</li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'shop:create_store' %}">Create a store</a>
+{% endblock %}

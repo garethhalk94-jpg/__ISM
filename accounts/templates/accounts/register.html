@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form method="post">
+  {% csrf_token %}
+  {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+  <!-- Username Entry -->
+  <label for="id_username">Username</label>
+  <input type="text" id="id_username" name="username" value="{{ form_data.username }}" required>
+
+  <!-- Password and Password Confirm Entry -->
+  <label for="id_password">Password</label>
+  <input type="password" id="id_password" name="password" required>
+  <label for="id_password_confirm">Password Confirm</label>
+  <input type="password" id="id_password_confirm" name="password_confirm" required>
+
+  <!-- Email Address Entry -->
+  <label for="id_email">Email Address</label>
+  <input type="email" id="id_email" name="email" value="{{ form_data.email }}" required>
+
+  <!-- Account Type Selector Dropdown -->
+  <label for="id_account_type">Account type</label>
+  <select id="id_account_type" name="account_type" required>
+    <!-- Placeholder/Default -->
+    <option value="" disabled {% if not form_data.account_type %}selected{% endif %}>-- Select --</option>
+    <!-- Buyer -->
+    <option value="buyers" {% if form_data.account_type == "buyers" %}selected{% endif %}>Buyer</option>
+    <!-- Vendor -->
+    <option value="vendors" {% if form_data.account_type == "vendors" %}selected{% endif %}>Vendor</option>
+  </select>
+
+  <!-- Register Button -->
+  <button type="submit">Register</button>
+
+  <!-- Already have an account? -->
+  <a href="{% url 'accounts:login' %}">Already have an account?</a>
+</form>
+{% endblock %}
+
+<!-- accounts/templates/accounts/register.html, with a <form method="post"> and {% csrf_token %} inside it.
+    Without the token, Django rejects the POST with a 403. -->
+<!-- Account type: add a <select name="account_type"> to your form with vendor and buyer options. -->
+
+<!-- And in the template, each input reads its value back:
+
+html
+<input type="text" name="username" value="{{ form_data.username }}">
+<input type="email" name="email" value="{{ form_data.email }}"> -->
+
+<!-- The <select> needs a different trick. An <input> takes a value, but a dropdown remembers its choice
+    through a selected attribute on the matching <option>.
+    Look up how to use {% if form_data.account_type == "vendor" %}selected{% endif %} inside an option tag. -->

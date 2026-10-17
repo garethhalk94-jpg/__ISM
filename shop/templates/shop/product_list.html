@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Products</h1>
+  <ul>
+    {% for product in products %}
+      <li>
+        <a href="{% url 'shop:product_detail' product.pk %}">{{ product.name }}</a>
+        | R{{ product.price }} | {{ product.store.name }}
+        {% if product.stock == 0 %}(Out of stock){% endif %}
+      </li>
+    {% empty %}
+      <li>No products yet.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

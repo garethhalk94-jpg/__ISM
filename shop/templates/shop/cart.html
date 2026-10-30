@@ -6,7 +6,7 @@
     <table>
       <tr>
         <th>Product</th><th>Store</th><th>Price</th>
-        <th>Quantity</th><th>Total</th>
+        <th>Quantity</th><th>Total</th><th></th>
       </tr>
       {% for item in items %}
         <tr>
@@ -18,7 +18,7 @@
           <td>
             <form method="post" action="{% url 'shop:remove_cart_item' item.product.pk %}">
               {% csrf_token %}
-              <button type="submit">Remove Item</button>
+              <button type="submit" class="button button-danger button-small">Remove</button>
             </form>
           </td>
         </tr>
@@ -26,12 +26,17 @@
     </table>
     <p><strong>Total: R{{ total }}</strong></p>
 
-    <form method="post" action="{% url 'shop:checkout' %}">
+    <div class="cart-actions">
+      <a href="{% url 'shop:product_list' %}" class="button button-secondary">Keep shopping</a>
+      <form method="post" action="{% url 'shop:checkout' %}">
         {% csrf_token %}
-        <button type="submit">Checkout</button>
-    </form>
+        <button type="submit" class="button button-primary">Checkout</button>
+      </form>
+    </div>
   {% else %}
     <p>Your cart is empty.</p>
+    <div class="cart-actions">
+      <a href="{% url 'shop:product_list' %}" class="button button-primary">Start shopping</a>
+    </div>
   {% endif %}
-  <a href="{% url 'shop:product_list' %}">Keep shopping</a>
 {% endblock %}

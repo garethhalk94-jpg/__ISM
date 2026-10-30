@@ -9,16 +9,19 @@ from django.db import transaction
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import ResetToken
-
 from django.contrib.auth import get_user_model, login, logout, authenticate
-from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
 from django.core.validators import validate_email
 from django.views.decorators.http import require_POST
 
+from .models import ResetToken
+from .roles import get_role_group
+
+"""
+Views for registration, login, logout and password reset.
+"""
 
 User = get_user_model()
 
@@ -32,6 +35,13 @@ SESSION_TIMEOUT = 3600
 
 # Create your views here.
 def register(request):
+    """
+    Register a new Vendor or Buyer account.
+    On GET, show the registration form. On POST, validate the details,
+    create the user, add them to the group for the chosen role, log
+    them in and redirect to the home page.
+    """
+
     if request.method != "POST":
         return render(request, "accounts/register.html")
 
@@ -68,37 +78,43 @@ def register(request):
     if password != password_confirm:
         errors.append("Passwords do not match")
 
-    # Group type
-    if account_type in GROUPS_BY_TYPE:
-        try:
-            group = Group.objects.get(name=GROUPS_BY_TYPE[account_type])
-        except Group.DoesNotExist:
-            errors.append("Group does not exist.")
-    else:
+    # Account type
+    if account_type not in GROUPS_BY_TYPE:
         errors.append("Please choose an account type.")
 
     # Fetch and diplay errors, if applicable
     if errors:
-        return render(request, "accounts/register.html", {
-            "errors": errors,
-            "form_data": {
-                "username": username,
-                "email": email,
-                "account_type": account_type,
+        return render(
+            request,
+            "accounts/register.html",
+            {
+                "errors": errors,
+                "form_data": {
+                    "username": username,
+                    "email": email,
+                    "account_type": account_type,
+                },
             },
-        })
+        )
 
-    user = User.objects.create_user(
-        username=username,
-        password=password,
-        email=email
-    )
-    user.groups.add(group)
+    with transaction.atomic():
+        user = User.objects.create_user(
+            username=username, password=password, email=email
+        )
+        user.groups.add(get_role_group(GROUPS_BY_TYPE[account_type]))
+
     login(request, user)
+    request.session.set_expiry(SESSION_TIMEOUT)
     return redirect("shop:home")
 
 
 def login_user(request):
+    """
+    Log a user in with a username and password.
+    On GET, show the form. On POST, authenticate the credentials and
+    redirect to the home page, or show one generic error message.
+    """
+
     if request.method != "POST":
         return render(request, "accounts/login.html")
 
@@ -107,10 +123,14 @@ def login_user(request):
 
     user = authenticate(request, username=username, password=password)
     if user is None:
-        return render(request, "accounts/login.html", {
-            "error": "Invalid username or password",
-            "form_data": {"username": username},
-        })
+        return render(
+            request,
+            "accounts/login.html",
+            {
+                "error": "Invalid username or password",
+                "form_data": {"username": username},
+            },
+        )
 
     login(request, user)
     request.session.set_expiry(SESSION_TIMEOUT)
@@ -119,18 +139,30 @@ def login_user(request):
 
 @require_POST
 def logout_user(request):
+    """
+    Log the current user out (POST only) and show the login page.
+    """
+
     logout(request)
     return redirect("accounts:login")
+
 
 RESET_TOKEN_MINUTES = 15
 
 
 def hash_token(raw_token):
+    """
+    Return the SHA-256 hash of a raw reset token, for safe storage.
+    """
+
     return hashlib.sha256(raw_token.encode()).hexdigest()
 
 
 def get_valid_token(raw_token):
-    """Return the matching unused, unexpired token, or None."""
+    """
+    Return the matching unused, unexpired token, or None.
+    """
+
     return (
         ResetToken.objects.select_related("user")
         .filter(
@@ -143,6 +175,10 @@ def get_valid_token(raw_token):
 
 
 def build_reset_email(user, reset_url):
+    """
+    Build the password reset email containing the reset link.
+    """
+
     body = (
         f"Hi {user.username},\n\n"
         f"Here is your link to reset your password:\n{reset_url}\n\n"
@@ -150,7 +186,7 @@ def build_reset_email(user, reset_url):
         f"request this, you can ignore this email.\n"
     )
     return EmailMessage(
-        subject="CAPITAL ISM password reset",
+        subject="__ISM password reset",
         body=body,
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=[user.email],
@@ -158,6 +194,12 @@ def build_reset_email(user, reset_url):
 
 
 def forgot_password(request):
+    """
+    Email a reset link to the account that owns an email address.
+    The response is the same whether or not the email is registered,
+    so it cannot be used to discover which emails have accounts.
+    """
+
     if request.method != "POST":
         return render(request, "accounts/forgot_password.html")
 
@@ -196,6 +238,12 @@ def forgot_password(request):
 
 
 def reset_password(request, token):
+    """
+    Let a user choose a new password using a reset link token.
+    The token must exist, be unused and be unexpired. It is marked as
+    used once the password has been changed.
+    """
+
     reset_token = get_valid_token(token)
     if reset_token is None:
         messages.error(
@@ -221,9 +269,13 @@ def reset_password(request, token):
         errors.append("Passwords do not match.")
 
     if errors:
-        return render(request, "accounts/reset_password.html", {
-            "errors": errors,
-        })
+        return render(
+            request,
+            "accounts/reset_password.html",
+            {
+                "errors": errors,
+            },
+        )
 
     with transaction.atomic():
         user = reset_token.user

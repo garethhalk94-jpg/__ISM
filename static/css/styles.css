@@ -947,3 +947,197 @@ select {
         background: white;
     }
 }
+
+.reddit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.reddit-post {
+    padding: 16px 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.reddit-post h3 {
+    margin: 0 0 6px;
+    font-size: 16px;
+}
+
+.reddit-post p {
+    margin: 0 0 10px;
+    color: #777e89;
+    font-size: 13px;
+}
+
+
+/* ==========================================================
+   Consistent clickable elements (add at the END of styles.css)
+   ========================================================== */
+
+/* Plain text links in the page content look like links */
+.main-content a:not(.button):not(.brand) {
+    color: #2457c5;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.main-content a:not(.button):not(.brand):hover {
+    color: #183b8c;
+}
+
+/* Every plain <button> gets the standard button look */
+button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 16px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: #343a46;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+button:hover {
+    background: #20242c;
+}
+
+/* Keyboard users can always see where they are */
+a:focus-visible,
+button:focus-visible,
+.button:focus-visible {
+    outline: 3px solid rgb(36 87 197 / 45%);
+    outline-offset: 2px;
+}
+
+/* The log out button in the sidebar */
+.sidebar-user form {
+    margin: 10px 0 0;
+}
+
+.sidebar-user button {
+    width: 100%;
+    padding: 8px 12px;
+}
+
+/* Button variants */
+.button-small {
+    padding: 7px 12px;
+    font-size: 12px;
+}
+
+.button-danger {
+    background: #b3261e;
+    color: #fff;
+}
+
+.button-danger:hover {
+    background: #8c1d18;
+}
+
+/* Rows of buttons and links */
+.row-actions,
+.cart-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.row-actions form,
+.cart-actions form {
+    margin: 0;
+}
+
+.cart-actions {
+    margin-top: 20px;
+    gap: 10px;
+}
+
+/* Headings and tables in plain pages (cart, my stores, my products) */
+.main-content h1 {
+    margin: 0 0 20px;
+    font-size: 28px;
+    letter-spacing: -0.5px;
+}
+
+.main-content h2 {
+    margin: 28px 0 12px;
+    font-size: 18px;
+}
+
+.main-content table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.main-content th,
+.main-content td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 13px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.main-content th {
+    background: #f0f2f5;
+    color: #515762;
+    font-size: 12px;
+}
+
+.main-content td form {
+    margin: 0;
+}
+
+/* Lists of stores and products */
+.item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 0 20px;
+    padding: 0;
+    list-style: none;
+}
+
+.item-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.item-name {
+    font-weight: 600;
+}
+
+.item-meta {
+    color: #777e89;
+    font-size: 13px;
+}
+
+.item-empty {
+    padding: 14px 16px;
+    border: 1px dashed #d5d9e0;
+    border-radius: 10px;
+    color: #777e89;
+    background: #fff;
+}

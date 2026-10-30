@@ -3,6 +3,10 @@ from django.db import models
 
 
 class ResetToken(models.Model):
+    """
+    Return a readable description of the token.
+    """
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

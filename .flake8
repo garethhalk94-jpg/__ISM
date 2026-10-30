@@ -1,0 +1,4 @@
+[flake8]
+per-file-ignores =
+    capitalism/settings.py: E501
+exclude = migrations

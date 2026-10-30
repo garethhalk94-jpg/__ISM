@@ -8,7 +8,10 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("shop", "0002_rename_stock_qty_product_stock_order_orderitem_and_more"),
+        (
+            "shop",
+            "0002_rename_stock_qty_product_stock_order_orderitem_and_more",
+        ),
     ]
 
     operations = [
@@ -18,7 +21,9 @@ class Migration(migrations.Migration):
             field=models.DecimalField(
                 decimal_places=2,
                 max_digits=10,
-                validators=[django.core.validators.MinValueValidator(Decimal("0.01"))],
+                validators=[
+                    django.core.validators.MinValueValidator(Decimal("0.01"))
+                ],
             ),
         ),
     ]

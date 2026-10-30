@@ -1,21 +1,25 @@
 {% extends "base.html" %}
-<!-- shop/templates/shop/my_stores.html -->
+
 {% block content %}
-  <h1>My Stores (__ISM)</h1>
-  <ul>
+  <h1>My Stores</h1>
+
+  <ul class="item-list">
     {% for store in stores %}
-      <li>
-        {{ store.name }}
-        <a href="{% url 'shop:add_product' %}">Add a product</a>
-        <a href="{% url 'shop:edit_store' store.pk %}">Edit</a>
-        <form method="post" action="{% url 'shop:delete_store' store.pk %}" onsubmit="return confirm('Delete this store?')">
-          {% csrf_token %}
-          <button type="submit">Delete</button>
-        </form>
+      <li class="item-row">
+        <span class="item-name">{{ store.name }}</span>
+        <div class="row-actions">
+          <a href="{% url 'shop:add_product' %}" class="button button-secondary button-small">Add a product</a>
+          <a href="{% url 'shop:edit_store' store.pk %}" class="button button-secondary button-small">Edit</a>
+          <form method="post" action="{% url 'shop:delete_store' store.pk %}" onsubmit="return confirm('Delete this store?')">
+            {% csrf_token %}
+            <button type="submit" class="button button-danger button-small">Delete</button>
+          </form>
+        </div>
       </li>
     {% empty %}
-      <li>You don't have any stores yet.</li>
+      <li class="item-empty">You don't have any stores yet.</li>
     {% endfor %}
   </ul>
-  <a href="{% url 'shop:create_store' %}">Create a store</a>
+
+  <a href="{% url 'shop:create_store' %}" class="button button-primary">Create a store</a>
 {% endblock %}

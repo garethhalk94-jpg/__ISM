@@ -23,20 +23,3 @@
 </form>
 <a href="{% url 'accounts:forgot_password' %}">Forgot your password?</a>
 {% endblock %}
-
-<!-- accounts/templates/accounts/login.html, with a <form method="post"> and {% csrf_token %} inside it.
-     Without the token, Django rejects the POST with a 403. -->
-<!-- Account type: add a <select name="account_type"> to your form with vendor and buyer options. -->
-
-<!-- And in the template, each input reads its value back:
-
-    html
-    <input type="text" name="username" value="{{ form_data.username }}">
-    <input type="email" name="email" value="{{ form_data.email }}"> -->
-
-<!-- The <select> needs a different trick. An <input> takes a value, but a dropdown remembers its choice
-     through a selected attribute on the matching <option>.
-     Look up how to use {% if form_data.account_type == "vendor" %}selected{% endif %} inside an option tag. -->
-
-<!-- ...log out with a small form button containing {% csrf_token %} instead of a plain link.
-     That stops another site from logging your users out. -->

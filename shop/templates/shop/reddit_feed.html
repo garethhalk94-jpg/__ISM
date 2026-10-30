@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Reddit Feed | __ISM{% endblock %}
+
+{% block content %}
+<div class="form-page">
+
+    <header class="page-header">
+        <p class="eyebrow">COMMUNITY</p>
+        <h1>Posts from r/{{ subreddit }}</h1>
+        <p>The latest posts, fetched live from Reddit.</p>
+    </header>
+
+    {% if error %}
+        <div class="form-errors" role="alert">
+            <p>{{ error }}</p>
+        </div>
+    {% endif %}
+
+    <ul class="reddit-list">
+        {% for post in posts %}
+            <li class="reddit-post">
+                <h3>{{ post.title }}</h3>
+                <p>by {{ post.author }}</p>
+                {% if post.url %}
+                    <a href="{{ post.url }}" target="_blank"
+                       rel="noopener noreferrer"
+                       class="button button-secondary">View post</a>
+                {% endif %}
+            </li>
+        {% empty %}
+            {% if not error %}
+                <li class="reddit-post"><p>No posts found.</p></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+</div>
+{% endblock %}

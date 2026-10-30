@@ -5,24 +5,29 @@
 
   {% for store in stores %}
     <h2>{{ store.name }}</h2>
-    <ul>
+    <ul class="item-list">
       {% for product in store.products.all %}
-        <li>
-          {{ product.name }} | R{{ product.price }} | Stock: {{ product.stock }}
-          <a href="{% url 'shop:edit_product' product.pk %}">Edit</a>
-          <form method="post" action="{% url 'shop:delete_product' product.pk %}" onsubmit="return confirm('Delete this product?')">
-            {% csrf_token %}
-            <button type="submit">Delete</button>
-          </form>
+        <li class="item-row">
+          <div>
+            <span class="item-name">{{ product.name }}</span>
+            <span class="item-meta">R{{ product.price }} &middot; Stock: {{ product.stock }}</span>
+          </div>
+          <div class="row-actions">
+            <a href="{% url 'shop:edit_product' product.pk %}" class="button button-secondary button-small">Edit</a>
+            <form method="post" action="{% url 'shop:delete_product' product.pk %}" onsubmit="return confirm('Delete this product?')">
+              {% csrf_token %}
+              <button type="submit" class="button button-danger button-small">Delete</button>
+            </form>
+          </div>
         </li>
       {% empty %}
-        <li>No products in this store yet.</li>
+        <li class="item-empty">No products in this store yet.</li>
       {% endfor %}
     </ul>
   {% empty %}
-    <p>You need a store first.
-      <a href="{% url 'shop:create_store' %}">Create a store</a></p>
+    <p>You need a store first.</p>
+    <a href="{% url 'shop:create_store' %}" class="button button-primary">Create a store</a>
   {% endfor %}
 
-  <a href="{% url 'shop:add_product' %}">Add a product</a>
+  <p><a href="{% url 'shop:add_product' %}" class="button button-primary">Add a product</a></p>
 {% endblock %}

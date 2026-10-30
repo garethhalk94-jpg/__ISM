@@ -51,7 +51,10 @@ class Migration(migrations.Migration):
                 ),
                 ("name", models.CharField(max_length=100)),
                 ("description", models.TextField(blank=True)),
-                ("price", models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "price",
+                    models.DecimalField(decimal_places=2, max_digits=10),
+                ),
                 ("stock_qty", models.PositiveIntegerField(default=0)),
                 (
                     "store",

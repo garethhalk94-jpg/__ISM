@@ -36,7 +36,7 @@ your versions match the ones the project was built and tested with.
 Every step has commands you can copy and paste. Run them in a terminal
 (PowerShell on Windows, Terminal on macOS or Linux).
 
-## 1. Get the code
+## 1. Get the code and enter the project directory
 
 Open you CommandPrompt/PowerShell in the directory you wish to install
 and enter in the following:
@@ -45,13 +45,28 @@ git clone https://github.com/garethhalk94-jpg/__ISM.git
 cd __ISM
 ```
 
-`cd` moves youinto the project folder, the one that contains `manage.py`. 
+`git clone` downloads the project into a new folder.
+`cd` moves you into the project folder, the one that contains `manage.py`. 
+Check you are in the right directory: enter the following and the list that
+shows must include `manage.py`.
+
+**Windows (PowerShell)**
+
+```
+dir
+```
+
+**macOS or Linux**
+
+```
+ls
+```
 **Stay in this folder for all the steps below.**
 
 ## 2. Create and activate a virtual environment
 
-A virtual environment keeps this project's packages separate from the rest of
-your computer.
+The command below creates a folder called `venv` **inside the project folder**.
+It keeps this project's packages separate from the rest of your computer.
 
 **Windows (PowerShell)**
 ```
@@ -187,6 +202,11 @@ python manage.py createsuperuser
 6. Open the product again and leave a review. It is marked **Verified**, because
    this buyer purchased it. Otherwise the review is marked **Unverified**.
 
+- **Buyers** can open **Vendors**, **Stores** and **Browse Products** from the
+  menu, and can edit or delete their own reviews on a product page.
+- **Vendors** have **My Stores**, **My Products** and **My Reviews**. My
+  Reviews lists the reviews of all their products, newest first, and can be
+  filtered by store, rating and verified status.
 
 # Emails
 

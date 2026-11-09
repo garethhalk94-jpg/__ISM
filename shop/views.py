@@ -4,10 +4,13 @@ from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-from django.db.models import ProtectedError
-from .models import Store, Product, Order, OrderItem, Review
+from django.db.models import ProtectedError, Count
 from django.core.mail import EmailMessage
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.paginator import Paginator
+
+from .models import Store, Product, Order, OrderItem, Review
 from .functions.reddit import RedditFetchError, get_reddit_posts
 
 """
@@ -301,8 +304,15 @@ def product_detail(request, pk):
     Show one product with its reviews and the add-to-cart form.
     """
 
-    product = get_object_or_404(Product, pk=pk)
-    return render(request, "shop/product_detail.html", {"product": product})
+    product = get_object_or_404(Product.objects.select_related("store"), pk=pk)
+    reviews = product.reviews_product.select_related("author").order_by(
+        "-created_at", "-id"
+    )
+    return render(
+        request,
+        "shop/product_detail.html",
+        {"product": product, "reviews": reviews},
+    )
 
 
 # ***** PRODUCT VIEWS - END *****
@@ -342,6 +352,8 @@ def add_review(request, pk):
     review.save()
     messages.success(request, "Your review has been posted.")
     return redirect("shop:product_detail", pk=product.pk)
+
+
 # ***** REVIEW VIEWS - END *****
 
 
@@ -431,6 +443,8 @@ def cart_page(request):
             "total": total,
         },
     )
+
+
 # ***** CART VIEWS - END *****
 
 
@@ -528,3 +542,179 @@ def invoice_confirmation(request, pk):
 
     order = get_object_or_404(Order, pk=pk, buyer=request.user)
     return render(request, "shop/invoice_confirmation.html", {"order": order})
+
+
+User = get_user_model()
+
+
+def paginate(request, queryset, per_page=20):
+    """
+    Return the requested page of a queryset and the filter query string.
+
+    The page number comes from ?page=<n>. The query string holds every other
+    parameter, so the page links keep the filters that are switched on.
+    """
+
+    page = Paginator(queryset, per_page).get_page(request.GET.get("page"))
+    params = request.GET.copy()
+    params.pop("page", None)
+    return page, params.urlencode()
+
+
+@login_required
+@permission_required("shop.view_store", raise_exception=True)
+def vendor_list(request):
+    """
+    List every vendor with their stores, for buyers and vendors.
+    """
+
+    vendors = (
+        User.objects.filter(groups__name="Vendors")
+        .prefetch_related("stores")
+        .order_by("username")
+    )
+    return render(request, "shop/vendor_list.html", {"vendors": vendors})
+
+
+@login_required
+@permission_required("shop.view_store", raise_exception=True)
+def store_list(request):
+    """
+    List every store with its vendor and product count, a page at a time.
+    """
+
+    stores = (
+        Store.objects.select_related("vendor")
+        .annotate(product_count=Count("products"))
+        .order_by("name", "id")
+    )
+    page, querystring = paginate(request, stores)
+    return render(
+        request,
+        "shop/store_list.html",
+        {"page": page, "querystring": querystring},
+    )
+
+
+@login_required
+@permission_required("shop.view_store", raise_exception=True)
+def store_detail(request, pk):
+    """
+    Show one store and the products it sells.
+    """
+
+    store = get_object_or_404(Store.objects.select_related("vendor"), pk=pk)
+    products = store.products.order_by("name", "id")
+    return render(
+        request,
+        "shop/store_detail.html",
+        {"store": store, "products": products},
+    )
+
+
+@login_required
+@permission_required("shop.add_store", raise_exception=True)
+def my_reviews(request):
+    """
+    List reviews of the vendor's own products, newest first.
+
+    Optional filters, all read from the query string: store, product,
+    rating and verified (yes or no). The list is limited to the vendor's own
+    products first, so a filter can never reveal another vendor's reviews.
+    """
+
+    stores = Store.objects.filter(vendor=request.user).order_by("name")
+    reviews = (
+        Review.objects.filter(product__store__vendor=request.user)
+        .select_related("product__store", "author")
+        .order_by("-created_at", "-id")
+    )
+
+    filters = {
+        "store": request.GET.get("store", ""),
+        "product": request.GET.get("product", ""),
+        "rating": request.GET.get("rating", ""),
+        "verified": request.GET.get("verified", ""),
+    }
+    if filters["store"].isdigit():
+        reviews = reviews.filter(product__store_id=int(filters["store"]))
+    if filters["product"].isdigit():
+        reviews = reviews.filter(product_id=int(filters["product"]))
+    if filters["rating"] in {"1", "2", "3", "4", "5"}:
+        reviews = reviews.filter(rating=int(filters["rating"]))
+    if filters["verified"] == "yes":
+        reviews = reviews.filter(is_verified=True)
+    elif filters["verified"] == "no":
+        reviews = reviews.filter(is_verified=False)
+
+    page, querystring = paginate(request, reviews)
+    return render(
+        request,
+        "shop/my_reviews.html",
+        {
+            "page": page,
+            "querystring": querystring,
+            "stores": stores,
+            "filters": filters,
+            "ratings": [1, 2, 3, 4, 5],
+        },
+    )
+
+
+@login_required
+@permission_required("shop.change_review", raise_exception=True)
+def edit_review(request, pk):
+    """
+    Let a buyer change the rating, title and text of their own review.
+
+    Whether the review is verified is not editable. The server set it when
+    the review was written.
+    """
+
+    review = get_object_or_404(
+        Review.objects.select_related("product"), pk=pk, author=request.user
+    )
+    context = {"review": review, "ratings": [1, 2, 3, 4, 5]}
+
+    if request.method != "POST":
+        context["form_data"] = {
+            "rating": review.rating,
+            "title": review.title,
+            "body": review.body,
+        }
+        return render(request, "shop/edit_review.html", context)
+
+    review.rating = request.POST.get("rating", "").strip()
+    review.title = request.POST.get("title", "").strip()
+    review.body = request.POST.get("body", "").strip()
+
+    errors = []
+    try:
+        review.full_clean(exclude=["product", "author"])
+    except ValidationError as exc:
+        for field, field_messages in exc.message_dict.items():
+            for message in field_messages:
+                errors.append(f"{field.capitalize()}: {message}")
+
+    if errors:
+        context.update({"errors": errors, "form_data": request.POST})
+        return render(request, "shop/edit_review.html", context)
+
+    review.save()
+    messages.success(request, "Your review has been updated.")
+    return redirect("shop:product_detail", pk=review.product_id)
+
+
+@login_required
+@permission_required("shop.delete_review", raise_exception=True)
+@require_POST
+def delete_review(request, pk):
+    """
+    Let a buyer delete their own review (POST only).
+    """
+
+    review = get_object_or_404(Review, pk=pk, author=request.user)
+    product_id = review.product_id
+    review.delete()
+    messages.success(request, "Your review has been deleted.")
+    return redirect("shop:product_detail", pk=product_id)

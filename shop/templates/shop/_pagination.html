@@ -1,0 +1,13 @@
+{% if page.has_other_pages %}
+  <nav class="pagination" aria-label="Pages">
+    {% if page.has_previous %}
+      <a href="?page={{ page.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}"
+         class="button button-secondary button-small">&larr; Previous</a>
+    {% endif %}
+    <span class="item-meta">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}
+      <a href="?page={{ page.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}"
+         class="button button-secondary button-small">Next &rarr;</a>
+    {% endif %}
+  </nav>
+{% endif %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}{{ store.name }} | __ISM{% endblock %}
+
+{% block content %}
+  <h1>{{ store.name }}</h1>
+  <p class="item-meta">Sold by {{ store.vendor.username }}</p>
+
+  <h2>Products</h2>
+  <ul class="item-list">
+    {% for product in products %}
+      <li class="item-row">
+        <div>
+          <span class="item-name">{{ product.name }}</span>
+          <span class="item-meta">
+            R{{ product.price }} &middot;
+            {% if product.stock > 0 %}{{ product.stock }} in stock{% else %}Out of stock{% endif %}
+          </span>
+        </div>
+        <a href="{% url 'shop:product_detail' product.pk %}"
+           class="button button-secondary button-small">View product</a>
+      </li>
+    {% empty %}
+      <li class="item-empty">This store has no products yet.</li>
+    {% endfor %}
+  </ul>
+
+  <a href="{% url 'shop:store_list' %}" class="button button-secondary">&larr; Back to stores</a>
+{% endblock %}

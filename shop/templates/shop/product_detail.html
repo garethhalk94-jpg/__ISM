@@ -98,12 +98,24 @@
 
     <section class="reviews">
         <h2>Reviews</h2>
-        {% for review in product.reviews_product.all %}
+        {% for review in reviews %}
             <article>
                 <strong>{{ review.title }}</strong> ({{ review.rating }}/5)
                 {% if review.is_verified %}Verified Purchase{% else %}Unverified{% endif %}
                 <p>{{ review.body }}</p>
                 <small>by {{ review.author.username }}, {{ review.created_at|date:"d M Y" }}</small>
+
+                {% if review.author_id == user.pk %}
+                    <div class="row-actions">
+                        <a href="{% url 'shop:edit_review' review.pk %}"
+                            class="button button-secondary button-small">Edit</a>
+                        <form method="post" action="{% url 'shop:delete_review' review.pk %}"
+                            onsubmit="return confirm('Delete your review?')">
+                            {% csrf_token %}
+                            <button type="submit" class="button button-danger button-small">Delete</button>
+                        </form>
+                    </div>
+                {% endif %}
             </article>
         {% empty %}
             <p>No reviews yet.</p>

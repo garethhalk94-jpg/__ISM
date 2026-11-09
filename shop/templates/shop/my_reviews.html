@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}My Reviews | __ISM{% endblock %}
+
+{% block content %}
+  <h1>My Reviews</h1>
+  <p class="item-meta">Reviews of the products in your stores, newest first.</p>
+
+  <form method="get" class="filter-bar">
+    <div class="form-field">
+      <label for="id_store">Store</label>
+      <select id="id_store" name="store">
+        <option value="">All stores</option>
+        {% for store in stores %}
+          <option value="{{ store.pk }}"
+                  {% if filters.store == store.pk|stringformat:"s" %}selected{% endif %}>{{ store.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="id_rating">Rating</label>
+      <select id="id_rating" name="rating">
+        <option value="">Any</option>
+        {% for n in ratings %}
+          <option value="{{ n }}"
+                  {% if filters.rating == n|stringformat:"s" %}selected{% endif %}>{{ n }} star{{ n|pluralize }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="id_verified">Purchase</label>
+      <select id="id_verified" name="verified">
+        <option value="">All</option>
+        <option value="yes" {% if filters.verified == "yes" %}selected{% endif %}>Verified</option>
+        <option value="no" {% if filters.verified == "no" %}selected{% endif %}>Unverified</option>
+      </select>
+    </div>
+
+    {% if filters.product %}
+      <input type="hidden" name="product" value="{{ filters.product }}">
+    {% endif %}
+
+    <div class="filter-actions">
+      <button type="submit" class="button button-primary button-small">Filter</button>
+      <a href="{% url 'shop:my_reviews' %}" class="button button-secondary button-small">Clear</a>
+    </div>
+  </form>
+
+  {% if filters.product %}
+    <p class="item-meta">Showing one product only.</p>
+  {% endif %}
+  <p class="item-meta">{{ page.paginator.count }} review{{ page.paginator.count|pluralize }}</p>
+
+  <ul class="item-list">
+    {% for review in page %}
+      <li class="review-card">
+        <div class="row-actions">
+          <strong>{{ review.title }}</strong>
+          <span class="badge">{{ review.rating }}/5</span>
+          {% if review.is_verified %}
+            <span class="badge badge-ok">Verified</span>
+          {% else %}
+            <span class="badge">Unverified</span>
+          {% endif %}
+        </div>
+        <p class="item-meta">
+          on <a href="{% url 'shop:product_detail' review.product.pk %}">{{ review.product.name }}</a>
+          ({{ review.product.store.name }})
+          by {{ review.author.username }}, {{ review.created_at|date:"d M Y" }}
+        </p>
+        {% if review.body %}<p>{{ review.body }}</p>{% endif %}
+      </li>
+    {% empty %}
+      <li class="item-empty">No reviews match.</li>
+    {% endfor %}
+  </ul>
+
+  {% include "shop/_pagination.html" %}
+{% endblock %}

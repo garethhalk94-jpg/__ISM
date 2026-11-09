@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Vendors | __ISM{% endblock %}
+
+{% block content %}
+  <h1>Vendors</h1>
+  <p class="item-meta">Everyone selling on __ISM, and their stores.</p>
+
+  <ul class="item-list">
+    {% for vendor in vendors %}
+      <li class="item-row">
+        <div>
+          <span class="item-name">{{ vendor.username }}</span>
+          <div class="row-actions">
+            {% for store in vendor.stores.all %}
+              <a href="{% url 'shop:store_detail' store.pk %}"
+                 class="button button-secondary button-small">{{ store.name }}</a>
+            {% empty %}
+              <span class="item-meta">No stores yet.</span>
+            {% endfor %}
+          </div>
+        </div>
+      </li>
+    {% empty %}
+      <li class="item-empty">There are no vendors yet.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

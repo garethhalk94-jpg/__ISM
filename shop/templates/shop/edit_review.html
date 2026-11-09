@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Review | __ISM{% endblock %}
+
+{% block content %}
+<div class="form-page">
+
+    <header class="page-header">
+        <p class="eyebrow">YOUR REVIEW</p>
+        <h1>Edit review</h1>
+        <p>
+            of
+            <a href="{% url 'shop:product_detail' review.product.pk %}">{{ review.product.name }}</a>
+        </p>
+    </header>
+
+    <section class="form-card">
+
+        {% if errors %}
+            <div class="form-errors" role="alert">
+                {% for error in errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" class="styled-form">
+            {% csrf_token %}
+
+            <div class="form-field">
+                <label for="id_rating">Rating</label>
+                <select id="id_rating" name="rating" required>
+                    {% for n in ratings %}
+                        <option value="{{ n }}"
+                                {% if form_data.rating|stringformat:"s" == n|stringformat:"s" %}selected{% endif %}>{{ n }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="id_title">Title</label>
+                <input type="text" id="id_title" name="title" maxlength="100"
+                       value="{{ form_data.title }}" required>
+            </div>
+
+            <div class="form-field">
+                <label for="id_body">Review</label>
+                <textarea id="id_body" name="body" rows="5">{{ form_data.body }}</textarea>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'shop:product_detail' review.product.pk %}"
+                   class="button button-secondary">Cancel</a>
+                <button type="submit" class="button button-primary">Save changes</button>
+            </div>
+        </form>
+
+    </section>
+</div>
+{% endblock %}

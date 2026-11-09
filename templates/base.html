@@ -45,15 +45,27 @@
 
                 {% if user.is_authenticated %}
 
+                    {% if perms.shop.view_store %}
+                        <a href="{% url 'shop:vendor_list' %}"
+                           class="nav-link">
+                            Vendors
+                        </a>
+
+                        <a href="{% url 'shop:store_list' %}"
+                           class="nav-link">
+                            Stores
+                        </a>
+                    {% endif %}
+
                     {% if perms.shop.view_product %}
                         <a href="{% url 'shop:product_list' %}"
-                           class="nav-link">
-                            Browse Products
+                            class="nav-link">
+                             Browse Products
                         </a>
 
                         <a href="{% url 'shop:cart_page' %}"
-                           class="nav-link">
-                            My Cart
+                            class="nav-link">
+                             My Cart
                         </a>
                     {% endif %}
 
@@ -70,6 +82,11 @@
                         <a href="{% url 'shop:my_products' %}"
                            class="nav-link">
                             My Products
+                        </a>
+
+                        <a href="{% url 'shop:my_reviews' %}"
+                            class="nav-link">
+                             My Reviews
                         </a>
 
                         <a href="{% url 'shop:create_store' %}"

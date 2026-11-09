@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Stores | __ISM{% endblock %}
+
+{% block content %}
+  <h1>Stores</h1>
+  <p class="item-meta">{{ page.paginator.count }} store{{ page.paginator.count|pluralize }}</p>
+
+  <ul class="item-list">
+    {% for store in page %}
+      <li class="item-row">
+        <div>
+          <span class="item-name">{{ store.name }}</span>
+          <span class="item-meta">
+            by {{ store.vendor.username }} &middot;
+            {{ store.product_count }} product{{ store.product_count|pluralize }}
+          </span>
+        </div>
+        <a href="{% url 'shop:store_detail' store.pk %}"
+           class="button button-secondary button-small">View store</a>
+      </li>
+    {% empty %}
+      <li class="item-empty">There are no stores yet.</li>
+    {% endfor %}
+  </ul>
+
+  {% include "shop/_pagination.html" %}
+{% endblock %}

@@ -50,4 +50,16 @@ urlpatterns = [
         views.invoice_confirmation,
         name="invoice_confirmation",
     ),
+    # BROWSING - VENDORS AND STORES
+    path("vendors/", views.vendor_list, name="vendor_list"),
+    path("stores/browse/", views.store_list, name="store_list"),
+    path("stores/<int:pk>/", views.store_detail, name="store_detail"),
+    # REVIEWS
+    path("reviews/", views.my_reviews, name="my_reviews"),
+    path("reviews/<int:pk>/edit/", views.edit_review, name="edit_review"),
+    path(
+        "reviews/<int:pk>/delete/",
+        views.delete_review,
+        name="delete_review",
+    ),
 ]

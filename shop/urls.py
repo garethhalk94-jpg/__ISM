@@ -33,6 +33,7 @@ urlpatterns = [
     path("product/<int:pk>/", views.product_detail, name="product_detail"),
     # REVIEWS -  PRODUCT/BUYER
     path("product/<int:pk>/review/", views.add_review, name="add_review"),
+    # path("my_reviews/", views.my_reviews, name="my_reviews"),
     # CART - BUYERS
     path(
         "cart/add/<int:pk>/", views.add_item_to_cart, name="add_item_to_cart"

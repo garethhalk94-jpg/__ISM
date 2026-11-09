@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>My product reviews</h1>
+
+  {% for store in stores %}
+    <h2>{{ store.name }}</h2>
+
+    <ul class="item-list">
+      {% for product in store.products.all %}
+        <li class="item-row">
+          <div>
+            <span class="item-name">{{ product.name }}</span>
+            
+            <ul class="review-list">
+                {% for review in product.reviews_product.all %}
+                    <li class="review-item">
+                        <div>
+                            <strong>{{ review.title }}</strong>
+
+                            <span class="item-meta">
+                                {{ review.author.username }} &middot;
+                                {{ review.created_at|date:"d M Y" }}
+                            </span>
+                        </div>
+
+                        <p>Rating: {{ review.rating }}/5</p>
+
+                        <p>{{ review.body|default:"No written comment." }}</p>
+
+                        <span class="item-meta">
+                            {% if review.is_verdfied %}
+                                Verified purchase
+                            {% else %}
+                                Unverified purchase
+                            {% endif %}
+                        </span>
+                    </li>
+                {% empty %}
+                    <li class="item-empty">
+                        No reviews for this product yet.
+                    </li>
+                {% endfor %}
+            </ul>
+          </div>
+        </li>
+      {% empty %}
+        <li class="item-empty">
+            No products in this store yet.
+        </li>
+      {% endfor %}
+    </ul>
+
+  {% empty %}
+    <p>You need a store first.</p>
+    <a href="{% url 'shop:create_store' %}" class="button button-primary">
+        Create a store
+    </a>
+  {% endfor %}
+
+{% endblock %}

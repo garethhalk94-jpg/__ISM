@@ -1,0 +1,53 @@
+3. Access Control and Data Security
+
+3.1. Layers on every protected View:
+
+- Authentication: '@login_required'
+    - Logged out visitor is redirected to the login page.
+- Permissions: '@permission_required(...)'
+    - User's group must have the correct permission to 
+    access a view.
+- Ownership: 
+    - The database lookup also includes the owner.
+    If one Vendor tries to access another Vendor's Store
+    or Product it will return a 404.
+    Same applies for an order page in terms of Buyers.
+    One Buyer cannot access another Buyer's Order.
+
+
+3.2. Groups and Permissions
+
+=====================================================================
+| Group         | Permissions                                       |
+=====================================================================
+| Vendors       | add, change, delete, view for Store and Product   |
+---------------------------------------------------------------------
+| Buyers        | view for Store and Product; add, change, delete,  |
+|               | view for Review                                   |
+=====================================================================
+
+Permissions are given to groups, not to individual users, so changing
+a role's abilities means editing one group. The 'setup_groups' command 
+recreates both groups with the correct permissions on any database.
+
+
+3.3. Securing Data
+
+- Passwords are hashed by Django, and registration and reset enforce
+    Django's password validators.
+- Password reset tokens are random, expire after 15 minutes and can 
+    only be used once, and only the newest request is valid.
+- The reset form gives the same answer whether or not an email is 
+    registered so it cannot be used to discover which emails 
+    have accounts.
+- Login also gives a generic error for the same reason as above.
+- CSRF protection on every form to prevent malicious actors from 
+    accessing users sensitive information.
+- State changing actions are POST-only
+- Sessions expire after an hour, and the cart lives within the 
+    session.
+- Server-side validation repeats every check the browser makes, as
+    browser checks can be bypassed.
+- Secret Key and Database Password are in the '.env' file which is 
+    excluded from version control. '.env.example' documents what is 
+    needed.

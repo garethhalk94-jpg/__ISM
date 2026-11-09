@@ -1,0 +1,45 @@
+4. Planning for Failure
+
+=================================================================================================
+| Problem                                   | System Response                                   |
+=================================================================================================
+| Logged-out user opens a protected page    | Redirect to Login Page                            |
+|-----------------------------------------------------------------------------------------------|
+| Buyer opens a Vendor Page                 | 403 Forbidden                                     |
+|-----------------------------------------------------------------------------------------------|
+| Vendor requests another Vendor's Store    | 404 Not Found                                     |
+| or Product                                |                                                   |
+|-----------------------------------------------------------------------------------------------|
+| Username or email already used, weak      | Form is shown again with every error listed and   |
+| password, passwords do not match          | the input kept                                    |
+|-----------------------------------------------------------------------------------------------|
+| Chosen account type is missing or         | Registration is refused with a message, no user   | 
+| invalid                                   | is created                                        |
+|-----------------------------------------------------------------------------------------------|
+| The Buyers or Vendors group does not      | Registration is refused with a message to avoid   |
+| exist                                     | any half-users being created                      |
+|-----------------------------------------------------------------------------------------------|
+| Invalid price (negative, too many         | Rejected by model validation with a message       |
+| decimals, not a number) or stock values   |                                                   |
+|-----------------------------------------------------------------------------------------------|
+| Quantity outside 1-10 or more than        | Not added to the cart, message shown on the       |
+| stock available                           | product page                                      |
+|-----------------------------------------------------------------------------------------------|
+| Product is sold out or deleted between    | Checkout stops and nothing is written             |
+| adding to cart and checkout               |                                                   |
+|-----------------------------------------------------------------------------------------------|
+| Checkout fails part-way                   | The database transaction rolls back so there is   |
+|                                           | no partial order and stock is unchanged           |
+|-----------------------------------------------------------------------------------------------|
+| Invoice email cannot be sent              | The order still stands and the buyer sees a       |
+|                                           | warning                                           |
+|-----------------------------------------------------------------------------------------------|
+| Vendor deletes a Product or Store that    | The protected-delete error is caught and          |
+| has been ordered                          | explained                                         |
+|-----------------------------------------------------------------------------------------------|
+| Review has no/invalid rating, or no       | Rejected with message                             |
+| title                                     |                                                   |
+|-----------------------------------------------------------------------------------------------|
+| Session expires or user logs out with    | The cart is emptied on expiration                 |
+| items in a cart                           |                                                   |
+=================================================================================================

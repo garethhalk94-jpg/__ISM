@@ -1,4 +1,5 @@
-"""REST API views (version 1).
+"""
+REST API views (version 1).
 
 Every endpoint applies the same three layers as the website:
 

@@ -1,0 +1,59 @@
+2. User Interface
+
+2.1. Overall Layout Idea
++----------------+--------------------------------------------+
+|  __ISM         |  [ messages: errors / notices ]            |
+|                |                                            |
+|  Logged in as  |  Page content                              |
+|  <username>    |                                            |
+|  [Log out]     |                                            |
+|                |                                            |
+|  MAIN MENU     |                                            |
+|   Home         |                                            |
+|   Browse       |                                            |
+|   My Cart      |                                            |
+|                |                                            |
+|  VENDOR TOOLS  |                                            |
+|   My Stores    |                                            |
+|   My Products  |                                            |
+|   Create Store |                                            |
+|   Add Product  |                                            |
++----------------+--------------------------------------------+
+
+- A fixed sidebar for navigation for both Buyers and Vendors
+    (Sidebar will look different for Buyers and Vendors based
+    on their respective permissions).
+- Visitors (not logged in) will see 'Log in' and 'Register'
+- Messages like 'No stores/products present' will show at the
+    top of the main content area .
+- Smaller screens (mobile) the sidebar will move to the top and
+    and product grid will drop to fewer columns
+
+2.2 Pages:
+
+=================================================================================
+| Pages                 | Who can see it        | Purpose                       |
+=================================================================================
+| Home ('/')            | Everyone              | Product grid, search          |
+---------------------------------------------------------------------------------
+| Register, Log In      | Visitors              | Create an account,            | 
+|                       | (not logged in)       | Sign in                       |
+---------------------------------------------------------------------------------
+| Forgot Password,      | Visitors              | Recover an account            |
+| Reset Password        | (not logged in)       |                               |
+---------------------------------------------------------------------------------
+| Browse Products,      | Logged-in users with  | View Products, add to cart,   |
+| Product details       | 'view_product' perms. | read and write reviews        |
+---------------------------------------------------------------------------------
+| Cart                  | Buyers                | View cart, remove items from  |
+|                       |                       | cart, check out               |
+---------------------------------------------------------------------------------
+| Checkout confirmation | Buyer (owns an order) | On-screen confirmation of     |
+|                       |                       | checkout completion           |
+---------------------------------------------------------------------------------
+| My Stores, Create     | Vendors               | Manage vendor Stores          |
+| Store, Edit Store     |                       |                               |
+---------------------------------------------------------------------------------
+| My Products, Add      | Vendors               | Manage vendor Store Products  |
+| Product, Edit Product |                       |                               |
+=================================================================================

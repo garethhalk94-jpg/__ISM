@@ -1,0 +1,74 @@
+__ISM - Planning
+
+1. Requirements
+
+1.1. Users
+
+===========================================================================================
+| Users       | Description                           | Permissions                       |
+===========================================================================================
+| Visitor     | Not logged in                         | View the home page, register,     |
+|             |                                       | log in, request a password reset  |
+-------------------------------------------------------------------------------------------
+| Buyer       | Registered with 'Buyers' Group        | Browse products from every store, |
+|             |                                       | search, add to cart, check out,   |
+|             |                                       | receive an emailed invoice,       |
+|             |                                       | leave reviews.                    |
+-------------------------------------------------------------------------------------------
+| Vendor      | Registered with 'Vendors' Group       | Perform CRUD actions on their     |
+|             |                                       | own Stores and Products within    |
+-------------------------------------------------------------------------------------------
+| Admin       | Django superuser                      | Manage all data through the      |
+|             |                                       | Django admin panel                |
+===========================================================================================
+
+
+1.2. Functional Requirements:
+
+- A User to register as a Vendor or a Buyer, as well as let them log in and log out.
+- A User registered as a Vendor can create, view, edit and delete Stores.
+- Allow those same Vendors to add, view, edit and delete Products from their Stores.
+- A User registered as a Buyer can view Products from different Stores and add them to
+    a cart
+- The cart is kept in the session while the Buyer browses on the application.
+- When a Buyer finishes checkout, the products are removed from the cart and an Order
+    is created, stock levels are reduced accordingly and an invoice is emailed to the
+    Buyer.
+- A Buyer can leave a Review on a Product, with the Review showing as verified (has 
+    bought the Product) or unverified (has not bought the Product) depending on whether 
+    or not the Buyer has that Product in their Order history (i.e. has bought the Product 
+    before).
+- Any User can request a password reset link if they have forgotten their password that
+    also expires.
+- Data is store in a MariaDb database.
+- Views and Models are protected by authentication and permissions.
+
+
+1.3. How each user interacts with the system:
+
+Buyer:
+- Registers as a Buyer
+- Login with their registration credentials
+- Browse and search for Products
+- Add Products to a cart
+- View cart
+- Checkout, confirming purchase
+- View confirmation message with an invoice being 
+    emailed to your registered email address
+- Optional: Leave Reviews on Products
+
+Vendor:
+- Register as a Vendor
+- Login with their registration credentials
+- Create a Store/s
+- Create Product/s for Store/s
+- Edit/Update stock levels and prices
+- View their Stores and Products with relavent 
+    information
+
+Forgotten Password User:
+- Request reset email from login screen
+- Receive email with reset password link
+- Open link
+- Enter new password
+- Log back in with new password credentials

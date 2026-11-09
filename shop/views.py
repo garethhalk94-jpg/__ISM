@@ -342,8 +342,6 @@ def add_review(request, pk):
     review.save()
     messages.success(request, "Your review has been posted.")
     return redirect("shop:product_detail", pk=product.pk)
-
-
 # ***** REVIEW VIEWS - END *****
 
 
@@ -433,8 +431,6 @@ def cart_page(request):
             "total": total,
         },
     )
-
-
 # ***** CART VIEWS - END *****
 
 

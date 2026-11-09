@@ -13,6 +13,7 @@
             <span class="item-meta">R{{ product.price }} &middot; Stock: {{ product.stock }}</span>
           </div>
           <div class="row-actions">
+            <a href="{% url 'shop:product_reviews' product.pk %}" class="button button-secondary button-small">Reviews</a>
             <a href="{% url 'shop:edit_product' product.pk %}" class="button button-secondary button-small">Edit</a>
             <form method="post" action="{% url 'shop:delete_product' product.pk %}" onsubmit="return confirm('Delete this product?')">
               {% csrf_token %}
